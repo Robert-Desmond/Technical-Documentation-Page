@@ -7,5 +7,190 @@
     </head>
 
     <body>
+        <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+        <nav id="navbar">
+            <header>GDScript Documentation</header>
+                <a href="#GDScript_reference" class="nav-link">GDScript reference</a>
+                <a href="#GDScript:_An_introduction_to_dynamic_languages" class="nav-link">GDScript: An introduction to dynamic languages</a>
+                <a href="#GDScript_exports" class="nav-link">GDScript exports</a>
+                <a href="#GDScript_style_guide" class="nav-link">GDScript style guide</a>
+                <a href="#Static_typing_in_GDScript" class="nav-link">Static typing in GDScript</a>
+        </nav>
+        <main id="main-doc">
+            <section class="main-section" id="GDScript_reference">
+                <header>GDScript reference</header>
+                <p>
+                    GDScript is a high-level, object-oriented, imperative, and gradually typed programming language built for Godot.
+                </p>
+                <p>
+                    GDScript is a high-level, dynamically typed programming language used to create content. It uses an indentation-based syntax similar to languages like Python. Its goal is to be optimized for and tightly integrated with Godot Engine, allowing great flexibility for content creation and integration.
+                </p>
+                <p>
+                    GDScript is entirely independent from Python and is not based on it.
+                </p>
+            </section>
+
+            <section class="main-section" id="GDScript:_An_introduction_to_dynamic_languages">
+                <header>GDScript: An introduction to dynamic languages</header>
+                <p>
+                    GDScript is a Dynamically Typed language. As such, its main advantages are that:
+                </p>
+                <ul>
+                    <li>The language is simple and easy to learn.</li>
+                    <li>Most code can be written and changed quickly and without hassle.</li>
+                    <li>Less code written means less errors & mistakes to fix.</li>
+                    <li>Easier to read the code (less clutter).</li>
+                    <li>No compilation is required to test.</li>
+                    <li>Runtime is tiny.</li>
+                    <li>Duck-typing and polymorphism by nature.</li>
+                </ul>
+                <p>
+                    While the main disadvantages are:
+                </p>
+                <ul>
+                    <li>Less performance than statically typed languages.</li>
+                    <li>More difficult to refactor (symbols can't be traced)</li>
+                    <li>Some errors that would typically be detected at compile time in statically typed languages only appear while running the code (because expression parsing is more strict)</li>
+                    <li>Less flexibility for code-completion (some variable types are only known at run-time)</li>
+                </ul>
+                <p>
+                    This, translated to reality, means that Godot+GDScript are a combination designed to create games quickly and efficiently. For games that are very computationally intensive and can't benefit from the engine built-in tools (such as the Vector types, Physics Engine, Math library, etc), the possibility of using C++ is present too. This allows you to still create most of the game in GDScript and add small bits of C++ in the areas that need a performance boost.
+                </p>
+                <h3>Variables & assignment</h3>
+                <p>
+                    All variables in a dynamically typed language are "variant"-like. This means that their type is not fixed, and is only modified through assignment. Example:
+                </p>
+                <p>
+                    Static:
+                </p>
+                <pre>
+                    <code>
+    int a; // Value uninitialized.
+    a = 5; // This is valid.
+    a = "Hi!"; // This is invalid.</code>
+                </pre>
+                <p>
+                    Dynamic:
+                </p>
+                <pre>
+                    <code>
+    var a # 'null' by default.
+    a = 5 # Valid, 'a' becomes an integer.
+    a = "Hi!" # Valid, 'a' changed to a string.</code>
+                </pre>
+            </section>
+
+            <section class="main-section" id="GDScript_exports">
+                <header>GDScript exports</header>
+                <p>
+                    In Godot, class members can be exported. This means their value gets saved along with the resource (such as the scene) they're attached to. They will also be available for editing in the property editor. Exporting is done by using the @export annotation:
+                </p>
+                <pre>
+                    <code>
+    extends Button
+
+    #Value will be saved and visible in the property editor 
+    @export var number = 5</code>
+                </pre>
+                <p>
+                    An exported variable must be initialized to a constant expression or have a type specifier in the variable. Some of the export annotations have a specific type and don't need the variable to be typed (see the Examples section below).
+                </p>
+                <p>
+                    One of the fundamental benefits of exporting member variables is to have them visible and editable in the editor. This way, artists and game designers can modify values that later influence how the program runs. For this, a special export syntax is provided.
+                </p>
+                <p>
+                    Exporting can only be done with built-in types or objects derived from the Resource class.
+                </p>
+            </section>
+
+            <section class="main-section" id="GDScript_style_guide">
+                <header>GDScript style guide</header>
+                <p>
+                    This style guide lists conventions to write elegant GDScript. The goal is to encourage writing clean, readable code and promote consistency across projects, discussions, and tutorials. Hopefully, this will also support the development of auto-formatting tools.
+                </p>
+                <p>
+                    Since GDScript is close to Python, this guide is inspired by Python's PEP 8 programming style guide.
+                </p>
+                <p>
+                    Style guides aren't meant as hard rulebooks. At times, you may not be able to apply some of the guidelines below. When that happens, use your best judgment, and ask fellow developers for insights.
+                </p>
+                <p>
+                    In general, keeping your code consistent in your projects and within your team is more important than following this guide to a tee.
+                </p>
+                <p>
+                    Here is a complete class example based on these guidelines:
+                </p>
+                <pre>
+                    <code>
+    class_name StateMachine
+    extends Node
+    # Hierarchical State machine for the player.
+    # Initializes states and delegates engine callbacks
+    # (_physics_process, _unhandled_input) to the state.
+
+
+    signal state_changed(previous, new)
+
+    export var initial_state = NodePath()
+    var is_active = true setget set_is_active
+
+    onready var _state = get_node(initial_state) setget set_state
+    onready var _state_name = _state.name
+
+
+    func _init():
+        add_to_group("state_machine")
+
+    func _ready():
+        connect("state_changed", self, "_on_state_changed")
+        _state.enter()
+
+    func _unhandled_input(event):
+        _state.unhandled_input(event)
+
+    func _physics_process(delta):
+        _state.physics_process(delta)</code>
+                </pre>
+            </section>
+
+            <section class="main-section" id="Static_typing_in_GDScript">
+                <header>Static typing in GDScript</header>
+                <p>
+                    In this guide, you will learn:
+                </p>
+                <ul>
+                    <li>How to use types in GDScript</li>
+                    <li>That static types can help you avoid bugs</li>
+                </ul>
+                <p>
+                    Where and how you use this new language feature is entirely up to you: you can use it only in some sensitive GDScript files, use it everywhere, or write code like you always did!
+                </p>
+                <p>
+                    Static types can be used on variables, constants, functions, parameters, and return types.
+                </p>
+                <h3>A brief look at static typing</h3>
+                <p>
+                    With typed GDScript, Godot can detect even more errors as you write code! It gives you and your teammates more information as you're working, as the arguments' types show up when you call a method.
+                </p>
+                <p>
+                    Imagine you're programming an inventory system. You code an Item node, then an Inventory. To add items to the inventory, the people who work with your code should always pass an Item to the Inventory.add method. With types, you can enforce this:
+                </p>
+                <pre>
+                    <code>
+    # In 'Item.gd'.
+    class_name Item
+    # In 'Inventory.gd'.
+    class_name Inventory
+                        
+                        
+    func add(reference: Item, amount: int = 1):
+        var item = find_item(reference)
+        if not item:
+            item = _instance_item_from_db(reference)
+                        
+        item.amount += amount</code>
+                </pre>
+            </section>
+        </main>
     </body>
 </html>
